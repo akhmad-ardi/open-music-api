@@ -1,0 +1,63 @@
+# ====================
+# Node.js dependencies
+# ====================
+node_modules/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# ==============
+# Environment
+# ==============
+.env
+.env.*.local
+.prod.env
+
+# =========
+# Logs
+# =========
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# ===============
+# Output / Build
+# ===============
+dist/
+build/
+
+# ==========
+# Coverage
+# ==========
+coverage/
+.nyc_output/
+
+# ============
+# Editor files
+# ============
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# ====================
+# Test & Temporary
+# ====================
+test-output/
+tmp/
+temp/
+*.tmp
+*.test.js
+*.spec.js
+
+# Hapi-specific (optional)
+.debug/
+
+# -----------------------
+notes-api-web-server.pem
