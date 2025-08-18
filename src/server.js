@@ -1,6 +1,17 @@
 require('dotenv').config();
 
 const Hapi = require('@hapi/hapi');
+
+// Plugins
+const albums = require('./api/albums');
+const songs = require('./api/songs');
+
+// Services
+const AlbumService = require('./services/AlbumService');
+const SongService = require('./services/SongService');
+
+const Validator = require('./validations');
+
 const ClientError = require('./exceptions/ClientError');
 
 const init = async () => {
@@ -14,7 +25,22 @@ const init = async () => {
     },
   });
 
-  await server.register([]);
+  await server.register([
+    {
+      plugin: albums,
+      options: {
+        service: AlbumService,
+        validator: Validator,
+      },
+    },
+    {
+      plugin: songs,
+      options: {
+        service: SongService,
+        validator: Validator,
+      },
+    },
+  ]);
 
   server.ext('onPreResponse', (request, h) => {
     // mendapatkan konteks response dari request
@@ -28,10 +54,12 @@ const init = async () => {
           message: response.message,
         });
         newResponse.code(response.statusCode);
+        // console.log('1 ', response.statusCode);
         return newResponse;
       }
 
       // mempertahankan penanganan client error oleh hapi secara native, seperti 404, etc.
+      // console.log('2 ', response);
       if (!response.isServer) {
         return h.continue;
       }
