@@ -14,4 +14,57 @@ const SongPayloadSchema = Joi.object({
   albumId: Joi.string(),
 });
 
-module.exports = { AlbumPayloadSchema, SongPayloadSchema };
+const UserPayloadSchema = Joi.object({
+  username: Joi.string().required(),
+  password: Joi.string().required(),
+  fullname: Joi.string().required(),
+});
+
+const PostAuthenticationPayloadSchema = Joi.object({
+  username: Joi.string().required(),
+  password: Joi.string().required(),
+});
+
+const PutAuthenticationPayloadSchema = Joi.object({
+  refreshToken: Joi.string().required(),
+});
+
+const DeleteAuthenticationPayloadSchema = Joi.object({
+  refreshToken: Joi.string().required(),
+});
+
+const PostPlaylistPayloadSchema = Joi.object({
+  name: Joi.string().required(),
+});
+
+const PostPlaylistSongPayloadSchema = Joi.object({
+  songId: Joi.string().required(),
+});
+
+const DeletePlaylistSongPayloadSchema = Joi.object({
+  songId: Joi.string().required(),
+});
+
+const PostCollaborationPayloadSchema = Joi.object({
+  playlistId: Joi.string().required(),
+  userId: Joi.string().required(),
+});
+
+const DeleteCollaborationPayloadSchema = Joi.object({
+  playlistId: Joi.string().required(),
+  userId: Joi.string().required(),
+});
+
+module.exports = {
+  AlbumPayloadSchema,
+  SongPayloadSchema,
+  UserPayloadSchema,
+  PostAuthenticationPayloadSchema,
+  PutAuthenticationPayloadSchema,
+  DeleteAuthenticationPayloadSchema,
+  PostPlaylistPayloadSchema,
+  PostPlaylistSongPayloadSchema,
+  DeletePlaylistSongPayloadSchema,
+  PostCollaborationPayloadSchema,
+  DeleteCollaborationPayloadSchema,
+};

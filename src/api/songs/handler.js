@@ -25,6 +25,7 @@ class SongHandler {
       },
     });
     response.code(201);
+
     return response;
   }
 
@@ -56,7 +57,6 @@ class SongHandler {
 
   async putSongHandler(request) {
     this._validator.validateSongPaylod(request.payload);
-
     const { id } = request.params;
 
     await this._service.editSongById(id, request.payload);

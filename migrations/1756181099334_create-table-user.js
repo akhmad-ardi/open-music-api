@@ -9,35 +9,23 @@ export const shorthands = undefined;
  * @returns {Promise<void> | void}
  */
 export const up = (pgm) => {
-  pgm.createTable('songs', {
+  pgm.createTable('users', {
     id: {
       type: 'VARCHAR(50)',
       primaryKey: true,
     },
-    title: {
+    username: {
+      type: 'VARCHAR(50)',
+      unique: true,
+      notNull: true,
+    },
+    password: {
       type: 'TEXT',
       notNull: true,
     },
-    year: {
-      type: 'INT',
-      notNull: true,
-    },
-    genre: {
-      type: 'VARCHAR(50)',
-      notNull: true,
-    },
-    performer: {
+    fullname: {
       type: 'TEXT',
       notNull: true,
-    },
-    duration: {
-      type: 'INT',
-      notNull: false,
-    },
-    album_id: {
-      type: 'VARCHAR(50)',
-      references: 'albums',
-      onDelete: 'CASCADE',
     },
   });
 };
@@ -48,5 +36,5 @@ export const up = (pgm) => {
  * @returns {Promise<void> | void}
  */
 export const down = (pgm) => {
-  pgm.dropTable('songs');
+  pgm.dropTable('users');
 };

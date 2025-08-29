@@ -8,4 +8,14 @@ const mapSongDBToModel = ({
   performer,
 });
 
-module.exports = { mapSongDBToModel };
+const mapPlaylistDBToModel = ({
+  id,
+  name,
+  username,
+}) => ({
+  id,
+  name,
+  username,
+});
+
+module.exports = { mapSongDBToModel, mapPlaylistDBToModel };
