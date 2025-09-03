@@ -1,14 +1,13 @@
 /**
  * @type {import('node-pg-migrate').ColumnDefinitions | undefined}
  */
-export const shorthands = undefined;
 
 /**
  * @param pgm {import('node-pg-migrate').MigrationBuilder}
  * @param run {() => void | undefined}
  * @returns {Promise<void> | void}
  */
-export const up = (pgm) => {
+const up = (pgm) => {
   pgm.createTable('playlist_song_activities', {
     id: { type: 'varchar(50)', primaryKey: true },
     playlist_id: {
@@ -36,6 +35,8 @@ export const up = (pgm) => {
  * @param run {() => void | undefined}
  * @returns {Promise<void> | void}
  */
-export const down = (pgm) => {
+const down = (pgm) => {
   pgm.dropTable('playlist_song_activities');
 };
+
+module.exports = { up, down };

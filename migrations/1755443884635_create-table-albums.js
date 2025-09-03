@@ -1,14 +1,13 @@
 /**
  * @type {import('node-pg-migrate').ColumnDefinitions | undefined}
  */
-export const shorthands = undefined;
 
 /**
  * @param pgm {import('node-pg-migrate').MigrationBuilder}
  * @param run {() => void | undefined}
  * @returns {Promise<void> | void}
  */
-export const up = (pgm) => {
+const up = (pgm) => {
   pgm.createTable('albums', {
     id: {
       type: 'VARCHAR(50)',
@@ -22,6 +21,10 @@ export const up = (pgm) => {
       type: 'INT',
       notNull: true,
     },
+    cover: {
+      type: 'VARCHAR(50)',
+      notNull: false,
+    },
   });
 };
 
@@ -30,6 +33,8 @@ export const up = (pgm) => {
  * @param run {() => void | undefined}
  * @returns {Promise<void> | void}
  */
-export const down = (pgm) => {
+const down = (pgm) => {
   pgm.dropTable('albums');
 };
+
+module.exports = { up, down };

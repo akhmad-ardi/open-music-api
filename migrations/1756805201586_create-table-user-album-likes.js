@@ -8,18 +8,19 @@
  * @returns {Promise<void> | void}
  */
 const up = (pgm) => {
-  pgm.createTable('playlists', {
+  pgm.createTable('user_album_likes', {
     id: {
       type: 'VARCHAR(50)',
       primaryKey: true,
     },
-    name: {
-      type: 'VARCHAR(50)',
-      notNull: true,
-    },
-    owner: {
+    user_id: {
       type: 'VARCHAR(50)',
       references: 'users',
+      onDelete: 'CASCADE',
+    },
+    album_id: {
+      type: 'VARCHAR(50)',
+      references: 'albums',
       onDelete: 'CASCADE',
     },
   });
@@ -31,7 +32,7 @@ const up = (pgm) => {
  * @returns {Promise<void> | void}
  */
 const down = (pgm) => {
-  pgm.dropTable('playlists');
+  pgm.dropTable('user_album_likes');
 };
 
 module.exports = { up, down };

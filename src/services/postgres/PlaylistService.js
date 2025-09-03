@@ -1,9 +1,9 @@
 const { Pool } = require('pg');
 const { nanoid } = require('nanoid');
-const { mapSongDBToModel } = require('../utils');
-const InvariantError = require('../exceptions/InvariantError');
-const NotFoundError = require('../exceptions/NotFoundError');
-const AuthorizationError = require('../exceptions/AuthorizationError');
+const { mapSongDBToModel } = require('../../utils');
+const InvariantError = require('../../exceptions/InvariantError');
+const NotFoundError = require('../../exceptions/NotFoundError');
+const AuthorizationError = require('../../exceptions/AuthorizationError');
 
 class PlaylistService {
   constructor() {
@@ -161,4 +161,4 @@ class PlaylistService {
   }
 }
 
-module.exports = new PlaylistService();
+module.exports = PlaylistService;

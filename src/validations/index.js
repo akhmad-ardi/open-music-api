@@ -1,3 +1,4 @@
+const InvariantError = require('../exceptions/InvariantError');
 const {
   AlbumPayloadSchema,
   SongPayloadSchema,
@@ -10,13 +11,13 @@ const {
   DeletePlaylistSongPayloadSchema,
   PostCollaborationPayloadSchema,
   DeleteCollaborationPayloadSchema,
+  PostExportPayloadSchema,
+  PostAlbumCoverHeaderSchema,
 } = require('./schema');
-const InvariantError = require('../exceptions/InvariantError');
 
 const Validator = {
   validateAlbumPayload(payload) {
     const validationResult = AlbumPayloadSchema.validate(payload);
-
     if (validationResult.error) {
       throw new InvariantError(validationResult.error.message);
     }
@@ -24,7 +25,6 @@ const Validator = {
 
   validateSongPaylod(payload) {
     const validationResult = SongPayloadSchema.validate(payload);
-
     if (validationResult.error) {
       throw new InvariantError(validationResult.error.message);
     }
@@ -32,7 +32,6 @@ const Validator = {
 
   validateUserPayload(payload) {
     const validationResult = UserPayloadSchema.validate(payload);
-
     if (validationResult.error) {
       throw new InvariantError(validationResult.error.message);
     }
@@ -89,6 +88,20 @@ const Validator = {
 
   validateDeleteCollaborationPayload: (payload) => {
     const validationResult = DeleteCollaborationPayloadSchema.validate(payload);
+    if (validationResult.error) {
+      throw new InvariantError(validationResult.error.message);
+    }
+  },
+
+  validatePostExportPayload: (payload) => {
+    const validationResult = PostExportPayloadSchema.validate(payload);
+    if (validationResult.error) {
+      throw new InvariantError(validationResult.error.message);
+    }
+  },
+
+  validatePostAlbumCoverHeader: (payload) => {
+    const validationResult = PostAlbumCoverHeaderSchema.validate(payload);
     if (validationResult.error) {
       throw new InvariantError(validationResult.error.message);
     }

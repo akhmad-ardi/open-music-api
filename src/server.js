@@ -2,6 +2,8 @@ require('dotenv').config();
 
 const Hapi = require('@hapi/hapi');
 const Jwt = require('@hapi/jwt');
+const Inert = require('@hapi/inert');
+const path = require('path');
 
 // Plugins
 const albums = require('./api/albums');
@@ -10,26 +12,45 @@ const users = require('./api/users');
 const authentications = require('./api/authentications');
 const playlists = require('./api/playlists');
 const collaborations = require('./api/collaborations');
+const Exports = require('./api/exports');
 
 // Services
-const AlbumService = require('./services/AlbumService');
-const SongService = require('./services/SongService');
-const UserService = require('./services/UserService');
-const AuthenticationService = require('./services/AuthenticationService');
-const PlaylistService = require('./services/PlaylistService');
-const PlaylistSongService = require('./services/PlaylistSongActivityService');
-const CollaborationService = require('./services/CollaborationService');
+const AlbumService = require('./services/postgres/AlbumService');
+const SongService = require('./services/postgres/SongService');
+const UserService = require('./services/postgres/UserService');
+const AuthenticationService = require('./services/postgres/AuthenticationService');
+const PlaylistService = require('./services/postgres/PlaylistService');
+const PlaylistSongService = require('./services/postgres/PlaylistSongActivityService');
+const CollaborationService = require('./services/postgres/CollaborationService');
+const UserAlbumLikeService = require('./services/postgres/UserAlbumLikeService');
+const CacheService = require('./services/redis/CacheService');
+const producerService = require('./services/rabbitmq/ProducerService');
+const UploadService = require('./services/storage/UploadService');
 
-const TokenManager = require('./tokenize/TokenManager');
+const tokenManager = require('./tokenize/TokenManager');
 
 const Validator = require('./validations');
 
 const ClientError = require('./exceptions/ClientError');
 
 const init = async () => {
+  const albumService = new AlbumService();
+  const songService = new SongService();
+  const userService = new UserService();
+  const authenticationService = new AuthenticationService();
+  const playlistService = new PlaylistService();
+  const playlistSongService = new PlaylistSongService();
+  const userAlbumLikeService = new UserAlbumLikeService();
+  const collaborationService = new CollaborationService();
+  const cacheService = new CacheService();
+  const uploadService = new UploadService(path.resolve(__dirname, '../public/cover/'));
+
   const server = Hapi.server({
     port: process.env.PORT,
     host: process.env.HOST,
+    // debug: {
+    //   request: ['error'],
+    // },
     routes: {
       cors: {
         origin: ['*'],
@@ -40,6 +61,9 @@ const init = async () => {
   await server.register([
     {
       plugin: Jwt,
+    },
+    {
+      plugin: Inert,
     },
   ]);
 
@@ -62,52 +86,77 @@ const init = async () => {
 
   server.auth.default('open_music_api_jwt');
 
+  // public files
+  server.route({
+    method: 'GET',
+    path: '/public/{param*}',
+    handler: {
+      directory: {
+        path: path.resolve(__dirname, '../public'),
+      },
+    },
+    options: {
+      auth: false,
+    },
+  });
+
   await server.register([
     {
       plugin: albums,
       options: {
-        service: AlbumService,
+        albumService,
+        uploadService,
+        userAlbumLikeService,
+        cacheService,
         validator: Validator,
       },
     },
     {
       plugin: songs,
       options: {
-        service: SongService,
+        service: songService,
         validator: Validator,
       },
     },
     {
       plugin: users,
       options: {
-        service: UserService,
+        service: userService,
         validator: Validator,
       },
     },
     {
       plugin: authentications,
       options: {
-        authenticationService: AuthenticationService,
-        userService: UserService,
-        tokenManager: TokenManager,
+        authenticationService,
+        userService,
+        tokenManager,
         validator: Validator,
       },
     },
     {
       plugin: playlists,
       options: {
-        playlistService: PlaylistService,
-        playlistSongService: PlaylistSongService,
-        songService: SongService,
+        playlistService,
+        playlistSongService,
+        songService,
         validator: Validator,
       },
     },
     {
       plugin: collaborations,
       options: {
-        collaborationService: CollaborationService,
-        playlistService: PlaylistService,
-        userService: UserService,
+        collaborationService,
+        playlistService,
+        userService,
+        validator: Validator,
+      },
+    },
+    {
+      plugin: Exports,
+      options: {
+        producerService,
+        playlistService,
         validator: Validator,
       },
     },
@@ -120,7 +169,6 @@ const init = async () => {
     if (response instanceof Error) {
       // penanganan client error secara internal.
       if (response instanceof ClientError) {
-        // console.log('1 ', response);
         const newResponse = h.response({
           status: 'fail',
           message: response.message,
@@ -131,11 +179,9 @@ const init = async () => {
 
       // mempertahankan penanganan client error oleh hapi secara native, seperti 404, etc.
       if (!response.isServer) {
-        // console.log('2 ', response);
         return h.continue;
       }
 
-      // console.log('3 ', response);
       // penanganan server error sesuai kebutuhan
       const newResponse = h.response({
         status: 'error',
